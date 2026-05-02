@@ -44,66 +44,115 @@ export default function DashboardPage() {
   const evolutionData = stats?.evolution_ca?.length > 0 ? stats.evolution_ca : [{ mois: "Jan", total: 0 }];
 
   return (
-    <div className="space-y-8 pb-8 animate-in fade-in duration-700">
+    <div className="space-y-10 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+      {/* Header Area */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-suivlima-blue">Tableau de bord</h1>
-          <p className="text-gray-500 mt-2 text-lg">Optimisez la gestion de vos dossiers et clients en temps réel.</p>
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-suivlima-blue">Tableau de bord</h1>
+          <p className="text-gray-400 font-bold text-sm md:text-base uppercase tracking-widest mt-2">Suivi de performance en temps réel</p>
         </div>
-        <button className="px-6 py-3 bg-suivlima-blue text-white rounded-2xl font-semibold shadow-premium hover-lift transition-all">
+        <button className="group flex items-center justify-center gap-3 px-8 py-4 bg-suivlima-blue text-white rounded-[2rem] font-black shadow-2xl shadow-suivlima-blue/20 hover:bg-suivlima-blue-light hover-lift transition-all w-full md:w-auto">
+          <FolderOpen size={20} className="group-hover:rotate-12 transition-transform" />
           Nouveau Dossier
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Main KPI: Revenue */}
-        <div className="md:col-span-2 bento-item glass-card p-8 border-orange-200/50 bg-gradient-to-br from-white/40 to-orange-50/50 shadow-sm">
-          <div className="flex justify-between items-start mb-8">
-            <div>
-              <p className="text-sm font-semibold text-orange-600 uppercase tracking-wider mb-1">Chiffre d&apos;Affaires Mensuel</p>
-              <h2 className="text-5xl font-bold text-suivlima-blue">{formatCur(stats?.ca_mensuel)}</h2>
+      {/* Main Grid */}
+      <div className="bento-grid">
+        {/* Primary KPI: Revenue */}
+        <div className="lg:col-span-8 glass-card p-8 md:p-12 relative overflow-hidden group hover-lift">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-suivlima-orange/5 blur-[80px] rounded-full -mr-20 -mt-20 group-hover:bg-suivlima-orange/10 transition-colors" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row justify-between gap-10">
+            <div className="space-y-6">
+              <div className="space-y-1">
+                <p className="text-xs font-black text-suivlima-orange uppercase tracking-[0.2em]">Chiffre d'Affaires Mensuel</p>
+                <h2 className="text-4xl md:text-6xl font-black text-suivlima-blue tracking-tighter">
+                  {formatCur(stats?.ca_mensuel)}
+                </h2>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 text-green-600 rounded-full text-sm font-black">
+                  <TrendingUp size={16} />
+                  +12.5%
+                </div>
+                <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">vs mois dernier</p>
+              </div>
             </div>
-            <div className="p-4 bg-orange-100 rounded-2xl text-suivlima-orange"><DollarSign size={32} /></div>
+
+            <div className="shrink-0">
+               <div className="w-20 h-20 md:w-24 md:h-24 bg-suivlima-blue rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl shadow-suivlima-blue/30 group-hover:rotate-6 transition-transform">
+                  <DollarSign size={40} className="md:w-12 md:h-12" />
+               </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span className="text-green-600 font-bold font-mono">↑ 12.5%</span>
-            <span>vs mois dernier</span>
+
+          {/* Inline Chart Preview */}
+          <div className="mt-12 h-[200px] w-full -mx-4 md:-mx-8 opacity-60 group-hover:opacity-100 transition-opacity">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={evolutionData}>
+                <Line type="monotone" dataKey="total" stroke="#F5A623" strokeWidth={6} dot={false} activeDot={{ r: 8 }} />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Small KPIs */}
-        <div className="bento-item glass-card p-6 border-white/40 hover:bg-white/60">
-           <div className="p-3 bg-blue-100 rounded-xl text-suivlima-blue w-fit mb-4"><Users size={24} /></div>
-           <p className="text-sm font-medium text-gray-500 mb-1">Clients Actifs</p>
-           <h3 className="text-3xl font-bold text-suivlima-blue">{stats?.clients_actifs || 0}</h3>
+        {/* Small KPIs Column */}
+        <div className="lg:col-span-4 grid grid-cols-1 gap-6">
+          <div className="glass-card p-8 hover-lift group border-l-4 border-l-suivlima-blue">
+             <div className="flex justify-between items-center mb-6">
+                <div className="w-12 h-12 bg-suivlima-blue/5 rounded-2xl flex items-center justify-center text-suivlima-blue group-hover:scale-110 transition-transform">
+                   <Users size={24} />
+                </div>
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Croissance</span>
+             </div>
+             <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Clients Actifs</p>
+             <h3 className="text-4xl font-black text-suivlima-blue tracking-tighter">{stats?.clients_actifs || 0}</h3>
+          </div>
+
+          <div className="glass-card p-8 hover-lift group border-l-4 border-l-red-500">
+             <div className="flex justify-between items-center mb-6">
+                <div className="w-12 h-12 bg-red-500/5 rounded-2xl flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                   <AlertCircle size={24} />
+                </div>
+                <span className="text-[10px] font-black text-red-400 uppercase tracking-widest animate-pulse">Action Requise</span>
+             </div>
+             <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Paiements en retard</p>
+             <h3 className="text-4xl font-black text-red-600 tracking-tighter">{stats?.paiements_en_retard || 0}</h3>
+          </div>
         </div>
 
-        <div className="bento-item glass-card p-6 border-white/40 hover:bg-white/60">
-           <div className="p-3 bg-red-100 rounded-xl text-red-600 w-fit mb-4"><AlertCircle size={24} /></div>
-           <p className="text-sm font-medium text-gray-500 mb-1">Retards</p>
-           <h3 className="text-3xl font-bold text-red-600">{stats?.paiements_en_retard || 0}</h3>
-        </div>
-
-        {/* Activity Feed */}
-        <div className="md:col-span-1 md:row-span-2 bento-item glass-card p-6 bg-white/20 backdrop-blur-xl border-white/30 shadow-sm">
+        {/* Activity Feed Column */}
+        <div className="lg:col-span-5 glass-card p-8 shadow-premium">
            <ActivityFeed />
         </div>
 
-        {/* Revenue Chart */}
-        <div className="md:col-span-3 bento-item glass-card p-8 bg-white/30 border-white/40 shadow-sm">
-          <h3 className="text-xl font-bold mb-8 flex items-center gap-2">
-            <span className="w-2 h-8 bg-suivlima-orange rounded-full"></span>
-            Performance des encaissements
-          </h3>
+        {/* Detailed Performance Chart */}
+        <div className="lg:col-span-7 glass-card p-8 md:p-12 shadow-premium">
+          <div className="flex justify-between items-center mb-12">
+            <h3 className="text-xl font-black text-suivlima-blue tracking-tight flex items-center gap-3">
+              <span className="w-2 h-8 bg-suivlima-orange rounded-full"></span>
+              Performance Annuelle
+            </h3>
+            <div className="flex gap-2">
+               <div className="w-3 h-3 bg-suivlima-orange rounded-full"></div>
+               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Encaissements</span>
+            </div>
+          </div>
+          
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={evolutionData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                <XAxis dataKey="mois" axisLine={false} tickLine={false} tick={{fill: "#6B7280", fontSize: 12}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: "#6B7280", fontSize: 12}} tickFormatter={(value) => `${value / 1000}k`} />
-                <Tooltip contentStyle={{ borderRadius: "16px", border: "none" }} />
-                <Line type="monotone" dataKey="total" stroke="#F5A623" strokeWidth={4} dot={{r: 4, fill: "#F5A623", strokeWidth: 2, stroke: "#fff"}} activeDot={{ r: 8 }} />
-              </LineChart>
+              <BarChart data={evolutionData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <XAxis dataKey="mois" axisLine={false} tickLine={false} tick={{fill: "#94A3B8", fontSize: 11, fontWeight: 700}} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: "#94A3B8", fontSize: 11, fontWeight: 700}} tickFormatter={(value) => `${value / 1000}k`} />
+                <Tooltip 
+                  cursor={{fill: '#F8FAFC'}}
+                  contentStyle={{ borderRadius: "24px", border: "none", boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)", padding: "16px" }} 
+                />
+                <Bar dataKey="total" fill="#F5A623" radius={[10, 10, 0, 0]} barSize={40} />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>

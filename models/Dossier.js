@@ -27,6 +27,17 @@ const Dossier = sequelize.define('Dossier', {
   },
 }, {
   tableName: 'dossiers',
+  indexes: [
+    {
+      fields: ['client_id'],
+    },
+    {
+      fields: ['statut'],
+    },
+    {
+      fields: ['client_id', 'statut'],
+    },
+  ],
 });
 
 module.exports = Dossier;

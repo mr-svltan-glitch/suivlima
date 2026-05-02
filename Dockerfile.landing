@@ -1,0 +1,11 @@
+# Image légère Nginx pour servir du contenu statique
+FROM nginx:alpine
+
+# Copie le contenu de la landing page dans le dossier par défaut de Nginx
+COPY ./landing-suivlima /usr/share/nginx/html
+
+# Expose le port 80
+EXPOSE 80
+
+# Démarre Nginx
+CMD ["nginx", "-g", "daemon off;"]

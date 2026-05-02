@@ -27,6 +27,17 @@ const Interaction = sequelize.define('Interaction', {
   },
 }, {
   tableName: 'interactions',
+  indexes: [
+    {
+      fields: ['client_id'],
+    },
+    {
+      fields: ['type_interaction'],
+    },
+    {
+      fields: ['date'],
+    },
+  ],
 });
 
 module.exports = Interaction;

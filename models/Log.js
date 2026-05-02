@@ -34,6 +34,20 @@ const Log = sequelize.define('Log', {
 }, {
   tableName: 'logs',
   updatedAt: false,
+  indexes: [
+    {
+      fields: ['user_id'],
+    },
+    {
+      fields: ['action'],
+    },
+    {
+      fields: ['target_type', 'target_id'],
+    },
+    {
+      fields: ['created_at'],
+    },
+  ],
 });
 
 module.exports = Log;

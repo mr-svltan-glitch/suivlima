@@ -53,37 +53,42 @@ export function ActivityFeed() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Activity size={20} className="text-suivlima-orange" />
-          Activité Récente
-        </h3>
-        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium animate-pulse">
-          LIVE
-        </span>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h3 className="text-xl font-black text-suivlima-blue tracking-tight">Activité Directe</h3>
+          <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Événements système</p>
+        </div>
+        <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-full border border-green-500/20">
+           <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping" />
+           <span className="text-[10px] text-green-600 font-black uppercase tracking-wider">Live</span>
+        </div>
       </div>
 
-      <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
+      <div className="space-y-6 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
         {logs.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-8">Aucune activité récente.</p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-2xl mb-4 opacity-50">📜</div>
+            <p className="text-sm text-gray-400 font-medium">Aucune activité récente détectée.</p>
+          </div>
         ) : (
           logs.map((log) => (
-            <div key={log.id} className="flex gap-4 p-3 rounded-xl hover:bg-white/50 transition-colors border border-transparent hover:border-gray-100 group">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center shrink-0 group-hover:bg-suivlima-blue group-hover:text-white transition-colors">
-                <UserIcon size={18} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start mb-1">
-                  <p className="text-sm font-medium truncate">
-                    {log.user ? `${log.user.prenom} ${log.user.nom}` : 'Système'}
-                  </p>
-                  <span className="text-[10px] text-gray-400 flex items-center gap-1 font-mono">
-                    <Clock size={10} />
+            <div key={log.id} className="relative pl-6 border-l-2 border-gray-100 hover:border-suivlima-blue transition-colors group pb-2">
+              <div className="absolute -left-[7px] top-0 w-3 h-3 rounded-full bg-white border-2 border-gray-200 group-hover:border-suivlima-blue group-hover:scale-125 transition-all" />
+              
+              <div className="flex flex-col gap-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-[11px] font-black text-suivlima-blue uppercase tracking-wider opacity-60">
+                    {log.user ? `${log.user.prenom} ${log.user.nom}` : 'SYSTÈME'}
+                  </span>
+                  <span className="text-[10px] text-gray-400 font-bold font-mono">
                     {getTimeAgo(log.created_at)}
                   </span>
                 </div>
-                <p className="text-xs text-gray-600">
-                  {formatAction(log.action)} : <span className="font-semibold">{log.details?.nom || log.details?.titre || 'Détails'}</span>
+                
+                <p className="text-sm text-gray-700 leading-snug">
+                  <span className="font-bold text-suivlima-blue">{formatAction(log.action)}</span>
+                  <span className="mx-2 text-gray-300">/</span>
+                  <span className="text-gray-500">{log.details?.nom || log.details?.titre || 'Opération réussie'}</span>
                 </p>
               </div>
             </div>

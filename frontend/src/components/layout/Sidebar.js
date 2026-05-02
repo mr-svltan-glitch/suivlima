@@ -32,47 +32,30 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   return (
     <div 
-      className={`fixed inset-y-0 left-0 z-50 flex flex-col gradient-blue text-white transition-all duration-300 shadow-xl ${
+      className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-[#111827] text-white transition-all duration-500 ease-in-out border-r border-white/5 ${
         isOpen ? 'w-64' : 'w-20'
       }`}
     >
       {/* Logo Area */}
-      <div className="flex items-center justify-between h-16 px-4 border-b border-suivlima-blue-light/50">
-        <Link href="/dashboard" className={`flex items-center space-x-2 ${!isOpen && 'justify-center w-full'}`}>
-          <div className="shrink-0 flex items-center mr-1">
+      <div className="flex items-center justify-between h-24 px-6">
+        <Link href="/dashboard" className={`flex items-center gap-3 ${!isOpen && 'justify-center w-full'}`}>
+          <div className="shrink-0 p-2 bg-white/5 rounded-xl border border-white/10 hover-lift">
              <Image 
                 src="/logo.png" 
                 alt="Logo Suivlima" 
-                width={36} 
-                height={36} 
-                className="object-contain rounded"
+                width={32} 
+                height={32} 
+                className="object-contain"
              />
           </div>
           {isOpen && (
-            <span className="text-2xl font-bold tracking-tight text-white mt-1">suivlima</span>
+            <span className="text-xl font-black tracking-tighter text-white uppercase italic">suiv<span>lima</span></span>
           )}
         </Link>
-        {isOpen && (
-          <button 
-            onClick={() => setIsOpen(false)}
-            className="p-1 rounded-md text-gray-300 hover:text-white hover:bg-suivlima-blue-light"
-          >
-            <ChevronLeft size={20} />
-          </button>
-        )}
       </div>
 
-      {!isOpen && (
-         <button 
-          onClick={() => setIsOpen(true)}
-          className="mx-auto mt-4 p-1 rounded-md text-gray-300 hover:text-white hover:bg-suivlima-blue-light"
-        >
-          <ChevronRight size={20} />
-        </button>
-      )}
-
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto pt-6 px-3 space-y-1">
+      <nav className="flex-1 overflow-y-auto pt-4 px-4 space-y-2">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -81,29 +64,29 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center px-3 py-3 rounded-lg transition-colors ${
+              className={`flex items-center px-4 py-3.5 rounded-2xl transition-all duration-300 group ${
                 isActive 
-                  ? 'bg-suivlima-blue-light text-white' 
-                  : 'text-gray-300 hover:bg-suivlima-blue-light/50 hover:text-white'
+                  ? 'bg-suivlima-blue text-white shadow-lg shadow-suivlima-blue/20' 
+                  : 'text-gray-400 hover:bg-white/5 hover:text-white'
               } ${!isOpen && 'justify-center'}`}
             >
-              <Icon size={22} className="shrink-0" />
-              {isOpen && <span className="ml-3 font-medium">{item.name}</span>}
+              <Icon size={22} className={`shrink-0 transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-suivlima-orange' : ''}`} />
+              {isOpen && <span className="ml-4 font-bold text-sm tracking-wide">{item.name}</span>}
             </Link>
           );
         })}
       </nav>
 
       {/* Footer / Logout */}
-      <div className="p-4 border-t border-suivlima-blue-light/50">
+      <div className="p-6">
         <button
           onClick={logout}
-          className={`flex items-center w-full px-3 py-3 text-red-300 rounded-lg hover:bg-red-500/10 transition-colors ${
+          className={`flex items-center w-full px-4 py-4 text-gray-500 rounded-2xl hover:bg-red-500/10 hover:text-red-400 transition-all group ${
             !isOpen ? 'justify-center' : ''
           }`}
         >
-          <LogOut size={22} className="shrink-0" />
-          {isOpen && <span className="ml-3 font-medium">Déconnexion</span>}
+          <LogOut size={22} className="shrink-0 group-hover:-translate-x-1 transition-transform" />
+          {isOpen && <span className="ml-4 font-bold text-sm">Déconnexion</span>}
         </button>
       </div>
     </div>

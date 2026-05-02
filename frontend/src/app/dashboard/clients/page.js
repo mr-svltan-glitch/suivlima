@@ -98,53 +98,85 @@ export default function ClientsPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 pb-10">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+    <div className="space-y-4 md:space-y-8 animate-in fade-in duration-700 pb-10">
+      <div className="flex flex-col gap-3 md:gap-6">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-suivlima-blue">Clients</h1>
-          <p className="text-gray-500 mt-2 text-lg">Gérez votre base de contacts et suivez leur activité en temps réel.</p>
+          <h1 className="text-2xl md:text-4xl font-bold tracking-tight text-suivlima-blue">Clients</h1>
+          <p className="text-gray-500 mt-1 md:mt-2 text-sm md:text-lg">Gérez votre base de contacts et suivez leur activité en temps réel.</p>
         </div>
         <button 
           onClick={() => openModal()}
-          className="bg-suivlima-blue text-white px-8 py-4 rounded-2xl flex items-center shadow-premium hover-lift font-bold"
+          className="bg-suivlima-blue text-white px-4 md:px-8 py-2 md:py-4 rounded-2xl flex items-center justify-center md:justify-start shadow-premium hover-lift font-bold text-sm md:text-base w-full md:w-auto"
         >
-          <UserPlus size={20} className="mr-2" />
+          <UserPlus size={18} className="md:w-5 md:h-5 mr-2" />
           Nouveau Client
         </button>
       </div>
 
       <div className="glass-card overflow-hidden border-white/40 shadow-sm">
-        <div className="p-6 bg-white/30 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="p-3 md:p-6 bg-white/30 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-4">
           <div className="relative w-full max-w-md">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} className="md:w-5 md:h-5" />
             <input
               type="text"
-              placeholder="Rechercher un nom, email ou téléphone..."
+              placeholder="Rechercher un nom..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-suivlima-blue focus:border-transparent outline-none transition-all"
+              className="w-full pl-9 md:pl-12 pr-3 md:pr-4 py-2 md:py-3 text-sm md:text-base bg-white/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-suivlima-blue focus:border-transparent outline-none transition-all"
             />
           </div>
-          <div className="text-sm font-medium text-gray-500">
-            {clients.length} client(s) au total
+          <div className="text-xs md:text-sm font-medium text-gray-500 whitespace-nowrap">
+            {clients.length} client(s)
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile: Card view */}
+        <div className="md:hidden divide-y divide-gray-100">
+          {loading ? (
+            <div className="px-4 py-12 text-center"><div className="w-8 h-8 border-4 border-suivlima-blue border-t-suivlima-orange rounded-full animate-spin mx-auto"></div></div>
+          ) : clients.length === 0 ? (
+            <div className="px-4 py-12 text-center text-gray-500 font-medium text-sm">Aucun client trouvé.</div>
+          ) : (
+            clients.map((client) => (
+              <div key={client.id} className="p-4 hover:bg-white/40 transition-colors">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-suivlima-blue text-sm">{client.prenom} {client.nom}</h3>
+                    <div className="space-y-1 mt-2">
+                      {client.email && <p className="text-xs text-gray-600 flex items-center gap-1"><Mail size={12} /> {client.email}</p>}
+                      {client.telephone && <p className="text-xs text-gray-600 flex items-center gap-1"><Phone size={12} /> {client.telephone}</p>}
+                      {client.adresse && <p className="text-xs text-gray-600 flex items-center gap-1"><MapPin size={12} /> {client.adresse}</p>}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 ml-2">
+                    <button onClick={() => openModal(client)} className="p-2 hover:bg-blue-100 rounded-lg"><Edit size={16} className="text-suivlima-blue" /></button>
+                    <button onClick={() => handleDelete(client.id)} className="p-2 hover:bg-red-100 rounded-lg"><Trash2 size={16} className="text-red-600" /></button>
+                  </div>
+                </div>
+                <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${client.statut_actif ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                  {client.statut_actif ? 'Actif' : 'Inactif'}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop: Table view */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50/50">
               <tr>
-                <th className="px-8 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Identité</th>
-                <th className="px-8 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Coordonnées</th>
-                <th className="px-8 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Status</th>
-                <th className="px-8 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest text-right">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Identité</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Coordonnées</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 bg-white/10">
               {loading ? (
-                <tr><td colSpan="4" className="px-8 py-20 text-center"><div className="w-8 h-8 border-4 border-suivlima-blue border-t-suivlima-orange rounded-full animate-spin mx-auto"></div></td></tr>
+                <tr><td colSpan="4" className="px-6 py-20 text-center"><div className="w-8 h-8 border-4 border-suivlima-blue border-t-suivlima-orange rounded-full animate-spin mx-auto"></div></td></tr>
               ) : clients.length === 0 ? (
-                <tr><td colSpan="4" className="px-8 py-20 text-center text-gray-500 font-medium">Aucun client trouvé.</td></tr>
+                <tr><td colSpan="4" className="px-6 py-20 text-center text-gray-500 font-medium">Aucun client trouvé.</td></tr>
               ) : (
                 clients.map((client) => (
                   <tr key={client.id} className="group hover:bg-white/40 transition-colors">

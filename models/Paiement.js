@@ -37,6 +37,20 @@ const Paiement = sequelize.define('Paiement', {
   },
 }, {
   tableName: 'paiements',
+  indexes: [
+    {
+      fields: ['dossier_id'],
+    },
+    {
+      fields: ['statut'],
+    },
+    {
+      fields: ['date_paiement'],
+    },
+    {
+      fields: ['dossier_id', 'statut'],
+    },
+  ],
 });
 
 module.exports = Paiement;

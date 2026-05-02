@@ -1,7 +1,10 @@
 version: '3.8'
+
 services:
+  # ── Base de Données PostgreSQL ──
   db:
     image: postgres:15
+    container_name: suivlima-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: your_password_here
@@ -10,6 +13,78 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - suivlima-network
+
+  # ── Backend API (Node.js/Express) ──
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: suivlima-backend
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DB_DIALECT: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: suivlima
+      DB_USER: postgres
+      DB_PASS: your_password_here
+      JWT_SECRET: suivlima_super_secret_key_2026_change_in_production
+      JWT_REFRESH_SECRET: suivlima_refresh_secret_key_2026_change_in_production
+      SENDGRID_API_KEY: your_sendgrid_api_key
+      EMAIL_FROM: noreply@suivlima.com
+      TWILIO_ACCOUNT_SID: your_twilio_account_sid
+      TWILIO_AUTH_TOKEN: your_twilio_auth_token
+      PAYMENT_BASE_URL: https://pay.suivlima.com
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    networks:
+      - suivlima-network
+    command: npm run dev
+
+  # ── Frontend (Next.js) ──
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: suivlima-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:5000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - suivlima-network
+    command: npm run dev
+
+  # ── Landing Page (Nginx) ──
+  landing:
+    build:
+      context: .
+      dockerfile: Dockerfile.landing
+    container_name: suivlima-landing
+    ports:
+      - "80:80"
+    networks:
+      - suivlima-network
 
 volumes:
   postgres_data:
+
+networks:
+  suivlima-network:
+    driver: bridge

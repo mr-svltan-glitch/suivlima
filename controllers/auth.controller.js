@@ -42,6 +42,13 @@ const register = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
+    // Génération Refresh Token
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+    );
+
     return successResponse(res, {
       user: {
         id: user.id,
@@ -50,6 +57,7 @@ const register = async (req, res) => {
         role: user.role,
       },
       token,
+      refreshToken,
     }, 'Inscription réussie.', 201);
   } catch (error) {
     console.error('Erreur register:', error);
@@ -86,6 +94,13 @@ const login = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
+    // Génération Refresh Token
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+    );
+
     return successResponse(res, {
       user: {
         id: user.id,
@@ -94,6 +109,7 @@ const login = async (req, res) => {
         role: user.role,
       },
       token,
+      refreshToken,
     }, 'Connexion réussie.');
   } catch (error) {
     console.error('Erreur login:', error);
@@ -114,4 +130,55 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getProfile };
+/**
+ * Rafraîchir le token JWT
+ * POST /api/auth/refresh
+ */
+const refreshToken = async (req, res) => {
+  try {
+    const { refreshToken: oldRefreshToken } = req.body;
+
+    if (!oldRefreshToken) {
+      return errorResponse(res, 'Refresh token manquant.', 400);
+    }
+
+    // Vérifier le refresh token
+    const decoded = jwt.verify(oldRefreshToken, process.env.JWT_REFRESH_SECRET);
+
+    // Récupérer l'utilisateur
+    const user = await User.findByPk(decoded.id, {
+      attributes: { exclude: ['mot_de_passe_hash'] },
+    });
+
+    if (!user) {
+      return errorResponse(res, 'Utilisateur introuvable.', 404);
+    }
+
+    // Générer un nouveau token d'accès
+    const newToken = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    );
+
+    // Générer un nouveau refresh token
+    const newRefreshToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' }
+    );
+
+    return successResponse(res, {
+      token: newToken,
+      refreshToken: newRefreshToken,
+    }, 'Token rafraîchi.');
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return errorResponse(res, 'Refresh token expiré. Veuillez vous reconnecter.', 401);
+    }
+    console.error('Erreur refreshToken:', error);
+    return errorResponse(res, 'Erreur lors du rafraîchissement du token.');
+  }
+};
+
+module.exports = { register, login, getProfile, refreshToken };

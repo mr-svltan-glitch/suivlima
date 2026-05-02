@@ -32,6 +32,20 @@ const Relance = sequelize.define('Relance', {
   },
 }, {
   tableName: 'relances',
+  indexes: [
+    {
+      fields: ['dossier_id'],
+    },
+    {
+      fields: ['statut'],
+    },
+    {
+      fields: ['date_programmee'],
+    },
+    {
+      fields: ['type_relance'],
+    },
+  ],
 });
 
 module.exports = Relance;
